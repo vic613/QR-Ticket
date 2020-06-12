@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -22,18 +23,24 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.qr_ticket.ui.MenuActivity;
 import com.example.qr_ticket.R;
-import com.example.qr_ticket.ui.login.LoginViewModel;
-import com.example.qr_ticket.ui.login.LoginViewModelFactory;
+import com.example.qr_ticket.data.UserSessionManager;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    // User Session Manager Class
+    UserSessionManager session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // User Session Manager
+        session = new UserSessionManager(getApplicationContext());
+
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -70,6 +77,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
+                    session.createUserLoginSession("NoiStock",
+                            loginResult.getSuccess().getDisplayName(),loginResult.getSuccess().getTblUserID());
+                    Intent menuActivity = new Intent(getBaseContext(),   MenuActivity.class);
+                    startActivity(menuActivity);
                 }
                 setResult(Activity.RESULT_OK);
 

@@ -10,6 +10,10 @@ import com.example.qr_ticket.data.LoginRepository;
 import com.example.qr_ticket.data.Result;
 import com.example.qr_ticket.data.model.LoggedInUser;
 import com.example.qr_ticket.R;
+import com.example.qr_ticket.data.model.tblUserModel;
+import com.example.qr_ticket.data.repository.tblUserRepository;
+
+import java.util.ArrayList;
 
 public class LoginViewModel extends ViewModel {
 
@@ -31,13 +35,20 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password) {
         // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+        tblUserModel usermodel = new tblUserModel();
+        usermodel.setLoginID(username);
+        usermodel.setPassword(password);
+        tblUserRepository userclass = new tblUserRepository();
 
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
+        ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);
+
+        if (result.isEmpty() ){
+
+        }else{
+           // LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+            loginResult.setValue(new LoginResult(new LoggedInUserView(result.get(0).getLoginID(), result.get(0).getTblUserID())));
+
+
         }
     }
 
