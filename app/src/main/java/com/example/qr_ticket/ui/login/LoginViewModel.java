@@ -1,15 +1,14 @@
 package com.example.qr_ticket.ui.login;
 
+import android.util.Patterns;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.util.Patterns;
-
-import com.example.qr_ticket.data.LoginRepository;
-import com.example.qr_ticket.data.Result;
-import com.example.qr_ticket.data.model.LoggedInUser;
 import com.example.qr_ticket.R;
+import com.example.qr_ticket.data.EncryptionClass;
+import com.example.qr_ticket.data.LoginRepository;
 import com.example.qr_ticket.data.model.tblUserModel;
 import com.example.qr_ticket.data.repository.tblUserRepository;
 
@@ -37,7 +36,7 @@ public class LoginViewModel extends ViewModel {
         // can be launched in a separate asynchronous job
         tblUserModel usermodel = new tblUserModel();
         usermodel.setLoginID(username);
-        usermodel.setPassword(password);
+        usermodel.setPassword(EncryptionClass.encrypt(password));
         tblUserRepository userclass = new tblUserRepository();
 
         ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);

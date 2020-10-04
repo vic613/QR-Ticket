@@ -1,17 +1,8 @@
 package com.example.qr_ticket.ui.login;
 
 import android.app.Activity;
-
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -23,9 +14,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.qr_ticket.ui.MenuActivity;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.example.qr_ticket.R;
 import com.example.qr_ticket.data.UserSessionManager;
+import com.example.qr_ticket.ui.MenuActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -77,8 +74,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
-                    session.createUserLoginSession("NoiStock",
-                            loginResult.getSuccess().getDisplayName(),loginResult.getSuccess().getTblUserID());
+                    session.createUserLoginSession("QRTicket",
+                            loginResult.getSuccess().getDisplayName(),String.valueOf(loginResult.getSuccess().getTblUserID()));
+
+
                     Intent menuActivity = new Intent(getBaseContext(),   MenuActivity.class);
                     startActivity(menuActivity);
                 }

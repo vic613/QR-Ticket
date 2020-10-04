@@ -36,6 +36,8 @@ public class UserSessionManager {
 
     public static final String KEY_USERID = "tblUserID";
 
+    private static UserSessionManager jInstance;
+
     // Constructor
     public UserSessionManager(Context context){
         this._context = context;
@@ -43,12 +45,21 @@ public class UserSessionManager {
         editor = pref.edit();
     }
 
+
+    public static synchronized UserSessionManager getInstance(Context context) {
+        if (jInstance != null) {
+            return jInstance;
+        } else {
+            jInstance = new UserSessionManager(context);
+            return jInstance;
+        }
+    }
     //Create login session
-    public void createUserLoginSession(String name, String email,int tblUserID){
+    public void createUserLoginSession(String name, String email,String tblUserID){
         // Storing login value as TRUE
         editor.putBoolean(IS_USER_LOGIN, true);
 
-        editor.putInt(KEY_USERID, tblUserID);
+        editor.putString(KEY_USERID, tblUserID);
         // Storing name in pref
         editor.putString(KEY_NAME, name);
 
@@ -128,7 +139,6 @@ public class UserSessionManager {
         // Staring Login Activity
         _context.startActivity(i);
     }
-
 
     // Check for login
     public boolean isUserLoggedIn(){

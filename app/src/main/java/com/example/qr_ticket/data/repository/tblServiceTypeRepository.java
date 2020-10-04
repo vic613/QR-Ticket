@@ -1,7 +1,7 @@
 package com.example.qr_ticket.data.repository;
 
 import com.example.qr_ticket.data.ConnectionClass;
-import com.example.qr_ticket.data.model.tblUserModel;
+import com.example.qr_ticket.data.model.tblServiceTypeModel;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -9,28 +9,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class tblUserRepository extends ConnectionClass {
+public class tblServiceTypeRepository extends ConnectionClass {
 
-    public ArrayList<tblUserModel> sp_tblUser_SearchByLogin(tblUserModel usermodel) {
+    public ArrayList<tblServiceTypeModel> sp_tblServiceType_SearchAllByFilter(tblServiceTypeModel servicetypemodel) {
         Connection con = getConnection();
         CallableStatement cs = null;
-        ArrayList<tblUserModel> result = new ArrayList<tblUserModel>();
-
-        tblUserModel item;
+        ArrayList<tblServiceTypeModel> result = new ArrayList<tblServiceTypeModel>();
+        tblServiceTypeModel item;
         try {
-            cs = con.prepareCall("{call sp_tblUser_SearchByLogin(?,?)}");
+            cs = con.prepareCall("{call sp_tblServiceType_SearchAllByFilter(?,?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
-            cs.setString(1, usermodel.getLoginID());
-            cs.setString(2, usermodel.getPassword());
+            cs.setString(1, servicetypemodel.getKeywords());
+            cs.setInt(2, servicetypemodel.getTblUserID());
+            //cs.setInt(2, UserSessionManager());
             cs.execute();
 
             ResultSet rs = cs.getResultSet();
-                while(rs.next()) {
-                    item = new tblUserModel();  // line1
-                    item.setLoginID(rs.getString("LoginID"));
-                    item.setTblUserID(rs.getInt("tblUserID"));
-                    result.add(item);
-                }
+            while(rs.next()) {
+                item = new tblServiceTypeModel();  // line1
+                item.setTblServiceTypeID(rs.getInt("tblServiceTypeID"));
+                item.setServiceTypeName(rs.getString("ServiceTypeName"));
+                item.setServiceTypeDesc(rs.getString("ServiceTypeDesc"));
+                result.add(item);
+            }
             return result;
         } catch (SQLException e) {
             System.err.println("SQLException: " + e.getMessage());

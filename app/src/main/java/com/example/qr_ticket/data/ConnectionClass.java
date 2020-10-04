@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class ConnectionClass {
 
     String classs = "net.sourceforge.jtds.jdbc.Driver";
-    String connString = "jdbc:jtds:sqlserver://192.168.0.183:1433/QRTicket;encrypt=fasle;user=sa;password=admin;instance=SQLEXPRESS2017;";
+    String connString = "jdbc:jtds:sqlserver://192.168.0.106:1433/QRTicket;encrypt=fasle;user=sa;password=admin;instance=SQLEXPRESS2017;";
     @SuppressLint("NewApi")
     public Connection getConnection() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()

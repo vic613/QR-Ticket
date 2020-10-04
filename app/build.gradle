@@ -15,7 +15,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", 'BASE_URL', "\"http://192.168.0.106/NoiStockAPI/Api/\""
+            buildConfigField "String", 'SECRETKEY', "\"oum1234\""
+        }
         release {
+            buildConfigField "String", 'BASE_URL', "\"http://18.140.68.251/NoiStockAPI/Api/\""
+            buildConfigField "String", 'SECRETKEY', "\"oum1234\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -38,4 +44,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
 }

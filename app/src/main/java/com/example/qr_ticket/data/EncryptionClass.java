@@ -1,11 +1,10 @@
 package com.example.qr_ticket.data;
 
-import android.os.Build;
+import android.util.Base64;
 
-import androidx.annotation.RequiresApi;
+import com.example.qr_ticket.BuildConfig;
 
 import java.security.spec.KeySpec;
-import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -16,11 +15,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class EncryptionClass {
 
-    private static String secretKey = "oum1234";
+    private static String secretKey = BuildConfig.SECRETKEY;
     private static String salt = "qrticket";
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String encrypt(String strToEncrypt, String secret)
+    public static String encrypt(String strToEncrypt)
     {
         try
         {
@@ -34,7 +32,7 @@ public class EncryptionClass {
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+            return Base64.encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")), Base64.DEFAULT);
         }
         catch (Exception e)
         {
@@ -43,8 +41,7 @@ public class EncryptionClass {
         return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String decrypt(String strToDecrypt, String secret) {
+    public static String decrypt(String strToDecrypt) {
         try
         {
             byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -57,7 +54,7 @@ public class EncryptionClass {
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            return new String(cipher.doFinal(Base64.decode(strToDecrypt, Base64.DEFAULT)));
         }
         catch (Exception e) {
             System.out.println("Error while decrypting: " + e.toString());
