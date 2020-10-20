@@ -4,34 +4,39 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/colorPrimary"
     android:padding="20dp">
 
+    <View
+        android:id="@+id/view1"
+        android:layout_width="fill_parent"
+        android:layout_height="3dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/txtServiceTypeName"
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_width="116dp"
+        android:layout_height="66dp"
         android:layout_centerHorizontal="false"
         android:ellipsize="marquee"
         android:text="Header"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorPrimary"
         android:textSize="20sp"></TextView>
 
 
     <TextView
-        android:text="Children"
-        android:layout_height="wrap_content"
         android:id="@+id/txtServiceTypeNumber"
-        android:layout_width="wrap_content"
+        android:layout_width="119dp"
+        android:layout_height="54dp"
         android:layout_below="@+id/txtServiceTypeName"
-        android:layout_marginTop="2dp"
         android:layout_centerHorizontal="false"
-        android:textSize="18sp"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorAccent"
-        android:ellipsize="marquee"></TextView>
+        android:layout_marginTop="2dp"
+
+        android:ellipsize="marquee"
+        android:text="Children"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"></TextView>
 
 
 </RelativeLayout>
