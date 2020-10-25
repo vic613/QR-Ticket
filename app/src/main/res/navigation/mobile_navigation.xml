@@ -12,11 +12,10 @@
         tools:layout="@layout/fragment_home">
     </fragment>
     <fragment
-        android:id="@+id/nav_newitem"
-        android:name="com.example.qr_ticket.ui.home.NewItemFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_new_item">
-    </fragment>
+        android:id="@+id/nav_ticket"
+        android:name="com.example.qr_ticket.ui.ticket.TicketFragment"
+        android:label="@string/menu_ticket"
+        tools:layout="@layout/fragment_ticket" />
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.example.qr_ticket.ui.gallery.GalleryFragment"

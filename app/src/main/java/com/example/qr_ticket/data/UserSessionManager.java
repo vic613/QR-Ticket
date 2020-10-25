@@ -36,6 +36,8 @@ public class UserSessionManager {
 
     public static final String KEY_USERID = "tblUserID";
 
+    public static final String KEY_ISADMIN = "0";
+
     private static UserSessionManager jInstance;
 
     // Constructor
@@ -55,7 +57,7 @@ public class UserSessionManager {
         }
     }
     //Create login session
-    public void createUserLoginSession(String name, String email,String tblUserID){
+    public void createUserLoginSession(String name, String email,String tblUserID, String IsAdmin){
         // Storing login value as TRUE
         editor.putBoolean(IS_USER_LOGIN, true);
 
@@ -65,6 +67,8 @@ public class UserSessionManager {
 
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
+
+        editor.putString(KEY_ISADMIN, IsAdmin);
 
         // commit changes
         editor.commit();
@@ -113,6 +117,8 @@ public class UserSessionManager {
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
         user.put(KEY_USERID, pref.getString(KEY_USERID, null));
+
+        user.put(KEY_ISADMIN, pref.getString(KEY_ISADMIN, null));
 
         // return user
         return user;

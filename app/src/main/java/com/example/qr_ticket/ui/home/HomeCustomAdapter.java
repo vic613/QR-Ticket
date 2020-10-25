@@ -39,14 +39,14 @@ public class HomeCustomAdapter extends BaseAdapter {
 
                 // set value into textview
                 TextView txtServiceTypeName = (TextView) gridView.findViewById(R.id.txtServiceTypeName);
-                TextView txtServiceTypeNumber = (TextView) gridView.findViewById(R.id.txtServiceTypeNumber);
+                TextView txtHomeTicketNumber = (TextView) gridView.findViewById(R.id.txtHomeTicketNumber);
 
                 String mobile = mobileValues[position];
 
 
                 if (mobile.equals(Integer.toString(servicetype.get(position).getTblServiceTypeID()))) {
                     txtServiceTypeName.setText(servicetype.get(position).getServiceTypeName());
-                    txtServiceTypeNumber.setText(String.valueOf(servicetype.get(position).getTblServiceTypeID()));
+                    txtHomeTicketNumber.setText(String.valueOf(servicetype.get(position).getTicketNumber()));
                 }
 
             } else {

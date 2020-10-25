@@ -19,8 +19,8 @@ public class tblServiceTypeRepository extends ConnectionClass {
         try {
             cs = con.prepareCall("{call sp_tblServiceType_SearchAllByFilter(?,?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
-            cs.setString(1, servicetypemodel.getKeywords());
-            cs.setInt(2, servicetypemodel.getTblUserID());
+            cs.setString("@sSearch", servicetypemodel.getKeywords());
+            cs.setInt("@tblUserID", servicetypemodel.getTblUserID());
             //cs.setInt(2, UserSessionManager());
             cs.execute();
 
@@ -30,6 +30,7 @@ public class tblServiceTypeRepository extends ConnectionClass {
                 item.setTblServiceTypeID(rs.getInt("tblServiceTypeID"));
                 item.setServiceTypeName(rs.getString("ServiceTypeName"));
                 item.setServiceTypeDesc(rs.getString("ServiceTypeDesc"));
+                item.setTicketNumber(rs.getInt("TicketNumber"));
                 result.add(item);
             }
             return result;

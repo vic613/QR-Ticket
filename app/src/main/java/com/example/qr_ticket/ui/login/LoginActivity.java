@@ -75,7 +75,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
                     session.createUserLoginSession("QRTicket",
-                            loginResult.getSuccess().getDisplayName(),String.valueOf(loginResult.getSuccess().getTblUserID()));
+                            loginResult.getSuccess().getDisplayName(),String.valueOf(loginResult.getSuccess().getTblUserID()),
+                            String.valueOf(loginResult.getSuccess().getIsAdmin()));
 
 
                     Intent menuActivity = new Intent(getBaseContext(),   MenuActivity.class);

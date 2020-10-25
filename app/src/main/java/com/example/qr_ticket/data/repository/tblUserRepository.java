@@ -20,8 +20,8 @@ public class tblUserRepository extends ConnectionClass {
         try {
             cs = con.prepareCall("{call sp_tblUser_SearchByLogin(?,?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
-            cs.setString(1, usermodel.getLoginID());
-            cs.setString(2, usermodel.getPassword());
+            cs.setString("@LoginID", usermodel.getLoginID());
+            cs.setString("@Password", usermodel.getPassword());
             cs.execute();
 
             ResultSet rs = cs.getResultSet();
@@ -29,6 +29,7 @@ public class tblUserRepository extends ConnectionClass {
                     item = new tblUserModel();  // line1
                     item.setLoginID(rs.getString("LoginID"));
                     item.setTblUserID(rs.getInt("tblUserID"));
+                    item.setIsAdmin(rs.getInt("IsAdmin"));
                     result.add(item);
                 }
             return result;

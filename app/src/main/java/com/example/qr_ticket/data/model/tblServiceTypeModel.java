@@ -1,6 +1,17 @@
 package com.example.qr_ticket.data.model;
 
 public class tblServiceTypeModel extends BaseModel {
+
+    public int tblServiceTypeID;
+    public String ServiceTypeName;
+    public String ServiceTypeDesc;
+    public int TicketNumber;
+    public String Keywords;
+
+    public tblServiceTypeModel() {
+
+    }
+
     public int getTblServiceTypeID() {
         return tblServiceTypeID;
     }
@@ -33,18 +44,17 @@ public class tblServiceTypeModel extends BaseModel {
         Keywords = keywords;
     }
 
-
-    public int getServiceTypeNumber() {
-        return ServiceTypeNumber;
+    public int getTicketNumber() {
+        return TicketNumber;
     }
 
-    public void setServiceTypeNumber(int serviceTypeNumber) {
-        ServiceTypeNumber = serviceTypeNumber;
+    public void setTicketNumber(int ticketNumber) {
+        TicketNumber = ticketNumber;
     }
 
-    public int tblServiceTypeID;
-    public String ServiceTypeName;
-    public String ServiceTypeDesc;
-    public int ServiceTypeNumber;
-    public String Keywords;
+
+    @Override
+    public String toString() {
+        return ServiceTypeName;
+    }
 }

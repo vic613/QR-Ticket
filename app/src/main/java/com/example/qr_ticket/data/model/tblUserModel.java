@@ -1,9 +1,10 @@
 package com.example.qr_ticket.data.model;
 
-public class tblUserModel {
+public class tblUserModel extends  BaseModel {
     private String loginID;
     private String password;
     private int tblUserID;
+    private int IsAdmin;
 
     public String getPassword() {
         return password;
@@ -27,5 +28,13 @@ public class tblUserModel {
 
     public void setTblUserID(int tblUserID) {
         this.tblUserID = tblUserID;
+    }
+
+    public int getIsAdmin() {
+        return IsAdmin;
+    }
+
+    public void setIsAdmin(int isAdmin) {
+        IsAdmin = isAdmin;
     }
 }

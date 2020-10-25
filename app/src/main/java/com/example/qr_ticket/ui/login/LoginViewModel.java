@@ -45,7 +45,7 @@ public class LoginViewModel extends ViewModel {
 
         }else{
            // LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(result.get(0).getLoginID(), result.get(0).getTblUserID())));
+            loginResult.setValue(new LoginResult(new LoggedInUserView(result.get(0).getLoginID(), result.get(0).getTblUserID(),result.get(0).getIsAdmin())));
 
 
         }
