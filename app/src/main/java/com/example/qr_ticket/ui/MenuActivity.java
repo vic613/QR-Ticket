@@ -2,6 +2,7 @@ package com.example.qr_ticket.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,23 +58,32 @@ public class MenuActivity extends AppCompatActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerLayout = navigationView.getHeaderView(0);
         TextView txtheaderemail = (TextView) headerLayout.findViewById(R.id.txtheaderemail);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        FloatingActionButton fabAdd = (FloatingActionButton) this.findViewById(R.id.fabAdd);
 
 
-        // Session class instance
         session = new UserSessionManager(getApplicationContext());
         user = UserSessionManager.getInstance(getApplicationContext()).getUserDetails();
-        // Check user login (this is the important point)
-        // If User is not logged in , This will redirect user to LoginActivity
-        // and finish current activity from activity stack.
+
         if (session.checkLogin())
             finish();
 
         txtheaderemail.setText(user.get(UserSessionManager.KEY_EMAIL));
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        Menu nav_Menu = navigationView.getMenu();
+
+        if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1){
+            fabAdd.setImageResource(R.drawable.ic_baseline_photo_camera);
+            nav_Menu.findItem(R.id.nav_ticket).setVisible(false);
+        }else{
+            nav_Menu.findItem(R.id.nav_adminticket).setVisible(false);
+        }
+
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_ticket, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_logout)
+                R.id.nav_home, R.id.nav_ticket, R.id.nav_adminticket,  R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -87,21 +97,23 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fabAdd = (FloatingActionButton) this.findViewById(R.id.fabAdd);
-        if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1){
-
-            fabAdd.setImageResource(R.drawable.ic_baseline_photo_camera);
-
-        }
 
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                showPopupDialog();
-
+                if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1) {
+                    startActivity(new Intent(MenuActivity.this ,ScannedBarcodeActivity.class));
+                }else {
+                    showPopupDialog();
+                }
             }
         });
+
+        Intent intent = getIntent();
+        String qrResult=intent.getStringExtra("QRResult");
+        if (!TextUtils.isEmpty(qrResult)){
+            navController.navigate(R.id.nav_adminticket);
+        }
 
     }
 
@@ -196,6 +208,7 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }

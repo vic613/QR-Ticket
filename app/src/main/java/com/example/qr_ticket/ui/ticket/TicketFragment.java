@@ -21,6 +21,8 @@ import com.example.qr_ticket.R;
 import com.example.qr_ticket.data.UserSessionManager;
 import com.example.qr_ticket.data.model.tblUserServiceTypeModel;
 import com.example.qr_ticket.data.repository.tblUserServiceTypeRepository;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,8 +88,13 @@ public class TicketFragment extends Fragment {
                 smallerDimension = smallerDimension * 3 / 4;
                 for (int i = 0; i < servicetypelist.size(); i++) {
                     String value = "Service: " + String.valueOf(servicetypelist.get(i).getServiceTypeName()) + "\n Ticket number: " + String.valueOf(servicetypelist.get(i).getTicketNumber()) + "\n Email: " + String.valueOf(servicetypelist.get(i).getEmail());
-                    qrgEncoder = new QRGEncoder(
-                            value, null,
+                    GsonBuilder builder = new GsonBuilder();
+                    builder.serializeNulls();
+                    Gson gson = builder.create();
+                    String json = gson.toJson(servicetypelist.get(i));
+
+                            qrgEncoder = new QRGEncoder(
+                            json, null,
                             QRGContents.Type.TEXT,
                             smallerDimension);
 
@@ -96,7 +103,7 @@ public class TicketFragment extends Fragment {
                     txtServiceTypeValue.setText(servicetypelist.get(i).getServiceTypeName());
                     txtTicketNumberValue.setText(String.valueOf(servicetypelist.get(i).getTicketNumber()));
                 }
-            }else{
+            } else {
 
                 Toast.makeText(getActivity(), "Please create ticket first.", Toast.LENGTH_SHORT).show();
                 navController.navigate(R.id.nav_home);
