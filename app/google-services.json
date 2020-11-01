@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1042105605330",
+    "firebase_url": "https://qr-ticket-37b83.firebaseio.com",
+    "project_id": "qr-ticket-37b83",
+    "storage_bucket": "qr-ticket-37b83.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042105605330:android:5732683a960640aa6fe10b",
+        "android_client_info": {
+          "package_name": "com.example.qr_ticket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042105605330-3bb5fu3hbuoo416qp8mj2142hnoqk2od.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6FyT4_pZjyUrjkXh-xX3hcQZFq2dY30E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042105605330-3bb5fu3hbuoo416qp8mj2142hnoqk2od.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

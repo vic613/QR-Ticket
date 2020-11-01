@@ -191,6 +191,7 @@ public class MenuActivity extends AppCompatActivity {
                 if (userservicetypemodel.errorCode == 1) {
                     Toast.makeText(MenuActivity.this, userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
                 } else {
+
                     navController.navigate(R.id.nav_ticket);
                     alertDialog.hide();
                 }

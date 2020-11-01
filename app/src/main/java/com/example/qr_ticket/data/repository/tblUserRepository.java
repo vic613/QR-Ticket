@@ -1,5 +1,7 @@
 package com.example.qr_ticket.data.repository;
 
+import android.util.Log;
+
 import com.example.qr_ticket.data.ConnectionClass;
 import com.example.qr_ticket.data.model.tblUserModel;
 
@@ -34,21 +36,21 @@ public class tblUserRepository extends ConnectionClass {
                 }
             return result;
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
+            Log.d("SQLException: ", e.getMessage());
         }
         finally {
             if (cs != null) {
                 try {
                     cs.close();
                 } catch (SQLException e) {
-                    System.err.println("SQLException: " + e.getMessage());
+                    Log.d("SQLException: ", e.getMessage());
                 }
             }
             if (con != null) {
                 try {
                     con.close();
                 } catch (SQLException e) {
-                    System.err.println("SQLException: " + e.getMessage());
+                    Log.d("SQLException: ", e.getMessage());
                 }
             }
         }

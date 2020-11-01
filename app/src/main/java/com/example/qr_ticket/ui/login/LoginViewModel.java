@@ -1,5 +1,6 @@
 package com.example.qr_ticket.ui.login;
 
+import android.util.Log;
 import android.util.Patterns;
 
 import androidx.lifecycle.LiveData;
@@ -9,8 +10,13 @@ import androidx.lifecycle.ViewModel;
 import com.example.qr_ticket.R;
 import com.example.qr_ticket.data.EncryptionClass;
 import com.example.qr_ticket.data.LoginRepository;
+import com.example.qr_ticket.data.model.tblUserCustomInfoModel;
 import com.example.qr_ticket.data.model.tblUserModel;
+import com.example.qr_ticket.data.repository.tblUserCustomInfoRepository;
 import com.example.qr_ticket.data.repository.tblUserRepository;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 
@@ -39,13 +45,31 @@ public class LoginViewModel extends ViewModel {
         usermodel.setPassword(EncryptionClass.encrypt(password));
         tblUserRepository userclass = new tblUserRepository();
 
-        ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);
+        final ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);
 
         if (result.isEmpty() ){
 
         }else{
            // LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+
+            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                @Override
+                public void onSuccess(InstanceIdResult instanceIdResult) {
+                    String token = instanceIdResult.getToken();
+                    tblUserCustomInfoModel usercustominfo = new tblUserCustomInfoModel();
+                    tblUserCustomInfoRepository usercustominfoclass = new tblUserCustomInfoRepository();
+                    usercustominfo.setTblUserID(result.get(0).getTblUserID());
+                    usercustominfo.setType("FIREBASETOKEN");
+                    usercustominfo.setValue(token);
+                    usercustominfoclass.sp_tblUserCustomInfo_InsertUpdate(usercustominfo);
+                    if (usercustominfo.errorCode == 1) {
+                        Log.d("error", usercustominfo.errorMessage);
+                    }
+                }
+            });
+
             loginResult.setValue(new LoginResult(new LoggedInUserView(result.get(0).getLoginID(), result.get(0).getTblUserID(),result.get(0).getIsAdmin())));
+
 
 
         }

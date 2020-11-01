@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -30,7 +31,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
-    Button btnAction;
+    Button btnscannedcancel;
     String intentData = "";
     boolean isEmail = false;
 
@@ -40,9 +41,9 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanned_barcode);
         txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
         surfaceView = findViewById(R.id.surfaceView);
-        btnAction = findViewById(R.id.btnAction);
+        btnscannedcancel = findViewById(R.id.btnscannedcancel);
 
-        btnAction.setOnClickListener(new View.OnClickListener() {
+        btnscannedcancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -81,7 +82,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d ("Barcode",e.getStackTrace().toString());
                 }
 
 

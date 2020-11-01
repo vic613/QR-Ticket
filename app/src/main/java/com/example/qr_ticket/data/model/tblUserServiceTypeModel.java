@@ -6,6 +6,25 @@ public class tblUserServiceTypeModel extends BaseModel {
     public int ticketNumber;
     public String email;
     public String serviceTypeName;
+    public String ticketStatus;
+    public String token;
+
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getTicketStatus() {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(String ticketStatus) {
+        this.ticketStatus = ticketStatus;
+    }
 
     public String getEmail() {
         return email;
