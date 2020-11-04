@@ -3,33 +3,56 @@ package com.example.qr_ticket.ui.login;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.qr_ticket.R;
+import com.example.qr_ticket.data.EncryptionClass;
 import com.example.qr_ticket.data.UserSessionManager;
+import com.example.qr_ticket.data.model.tblUserCustomInfoModel;
+import com.example.qr_ticket.data.model.tblUserModel;
+import com.example.qr_ticket.data.repository.tblUserCustomInfoRepository;
+import com.example.qr_ticket.data.repository.tblUserRepository;
 import com.example.qr_ticket.ui.MenuActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
-public class LoginActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private LoginViewModel loginViewModel;
     // User Session Manager Class
     UserSessionManager session;
-
+    private static final String TAG = "SignInActivity";
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleSignInClient mGoogleSignInClient;
+    ProgressBar loadingProgressBar;
+    private TextView mStatusTextView;
+    String password;
+    String loginID;
+    String displayname;
+    String type;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,106 +60,210 @@ public class LoginActivity extends AppCompatActivity {
 
         // User Session Manager
         session = new UserSessionManager(getApplicationContext());
-
+//
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+        final Button login = findViewById(R.id.login);
+        loadingProgressBar = findViewById(R.id.loading);
+
+
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
+            public void onClick(View view) {
+                showPopupDialog();
             }
         });
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
+        // Button listeners
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
+                .requestEmail()
+                .build();
+        // [END configure_signin]
+
+        // [START build_client]
+        // Build a GoogleSignInClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        // [END build_client]
+
+        // [START customize_button]
+        // Customize sign-in button. The sign-in button can be displayed in
+        // multiple sizes.
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        // [END customize_button]
+
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Check if the user is already signed in and all required scopes are granted
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
+            GoogleLogin(account);
+        } else {
+            GoogleLogin(null);
+        }
+    }
+
+    // [START onActivityResult]
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+    // [END onActivityResult]
+
+    // [START handleSignInResult]
+    private void handleSignInResult(@Nullable Task<GoogleSignInAccount> completedTask) {
+        Log.d(TAG, "handleSignInResult:" + completedTask.isSuccessful());
+
+        try {
+            // Signed in successfully, show authenticated U
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            GoogleLogin(account);
+        } catch (ApiException e) {
+            // Signed out, show unauthenticated UI.
+            Log.w(TAG, "handleSignInResult:error", e);
+            GoogleLogin(null);
+        }
+    }
+    // [END handleSignInResult]
+
+    // [START signIn]
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    // [END signIn]
+
+
+    private void GoogleLogin(@Nullable final GoogleSignInAccount account) {
+        if (account != null) {
+
+            loginID = String.valueOf(account.getEmail());
+            password = String.valueOf("");
+            displayname = account.getDisplayName();
+            type= "GOOGLE";
+            ProcessLogin();
+
+        }else{
+
+
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                signIn();
+                break;
+        }
+    }
+
+    private void showPopupDialog() {
+        // Create a AlertDialog Builder.
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setCancelable(false);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        final View dialog_locallogin = layoutInflater.inflate(R.layout.dialog_locallogin, null);
+        alertDialogBuilder.setView(dialog_locallogin);
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        final EditText usernameEditText = dialog_locallogin.findViewById(R.id.username);
+        final EditText passwordEditText = dialog_locallogin.findViewById(R.id.password);
+
+
+        Button btnLocalLogin = dialog_locallogin.findViewById(R.id.btnLocalLogin);
+        btnLocalLogin.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                    session.createUserLoginSession("QRTicket",
-                            loginResult.getSuccess().getDisplayName(),String.valueOf(loginResult.getSuccess().getTblUserID()),
-                            String.valueOf(loginResult.getSuccess().getIsAdmin()));
+            public void onClick(View v) {
+                loginID = String.valueOf(usernameEditText.getText());
+                password = String.valueOf(passwordEditText.getText());
+                displayname = "";
+                type="LOCAL";
+                ProcessLogin();
+                alertDialog.hide();
+            }
+        });
 
 
-                    Intent menuActivity = new Intent(getBaseContext(),   MenuActivity.class);
-                    startActivity(menuActivity);
-                }
+        Button btnLocalCancel = dialog_locallogin.findViewById(R.id.btnLocalCancel);
+        btnLocalCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                alertDialog.cancel();
+            }
+        });
+    }
+
+    public void ProcessLogin(){
+        try {
+
+            tblUserModel usermodel = new tblUserModel();
+            usermodel.setLoginID(loginID);
+            usermodel.setPassword(EncryptionClass.encrypt(password));
+            usermodel.setDisplayname("");
+            usermodel.setType(type);
+            tblUserRepository userclass = new tblUserRepository();
+
+            final ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);
+
+            if (!result.isEmpty()) {
+
+                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                    @Override
+                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                        String token = instanceIdResult.getToken();
+                        tblUserCustomInfoModel usercustominfo = new tblUserCustomInfoModel();
+                        tblUserCustomInfoRepository usercustominfoclass = new tblUserCustomInfoRepository();
+                        usercustominfo.setTblUserID(result.get(0).getTblUserID());
+                        usercustominfo.setType("FIREBASETOKEN");
+                        usercustominfo.setValue(token);
+                        usercustominfoclass.sp_tblUserCustomInfo_InsertUpdate(usercustominfo);
+                        if (usercustominfo.errorCode == 1) {
+                            Log.d("error", usercustominfo.errorMessage);
+                        }
+                    }
+                });
+
+                session.createUserLoginSession("QRTicket",
+                        result.get(0).getDisplayname(), String.valueOf(result.get(0).getTblUserID()),
+                        String.valueOf(result.get(0).getIsAdmin()));
+
+
+                Intent menuActivity = new Intent(getBaseContext(), MenuActivity.class);
+                startActivity(menuActivity);
+
+
                 setResult(Activity.RESULT_OK);
 
                 //Complete and destroy login activity once successful
                 finish();
+            } else {
+
             }
-        });
-
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-        };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                }
-                return false;
-            }
-        });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-        });
-    }
-
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-    }
-
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+        }catch (Throwable e) {
+           Log.d("Error",e.getMessage());
+        }
     }
 }

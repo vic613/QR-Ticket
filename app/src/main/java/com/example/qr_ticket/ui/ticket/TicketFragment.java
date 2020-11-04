@@ -102,6 +102,7 @@ public class TicketFragment extends Fragment {
                     qrImage.setImageBitmap(bitmap);
                     txtServiceTypeValue.setText(servicetypelist.get(i).getServiceTypeName());
                     txtTicketNumberValue.setText(String.valueOf(servicetypelist.get(i).getTicketNumber()));
+
                 }
             } else {
 

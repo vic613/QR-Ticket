@@ -1,6 +1,7 @@
 package com.example.qr_ticket.ui.home;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,7 @@ public class HomeCustomAdapter extends BaseAdapter {
     private Context context;
     private final String[] mobileValues;
     private List<tblServiceTypeModel> servicetype;
-
+    View gridView;
     public HomeCustomAdapter(Context context, String[] mobileValues, List<tblServiceTypeModel> servicetypelist) {
         this.context = context;
         this.mobileValues = mobileValues;
@@ -25,10 +26,12 @@ public class HomeCustomAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
+
+        try {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            View gridView;
+
 
             if (convertView == null) {
 
@@ -40,36 +43,39 @@ public class HomeCustomAdapter extends BaseAdapter {
                 // set value into textview
                 TextView txtServiceTypeName = (TextView) gridView.findViewById(R.id.txtServiceTypeName);
                 TextView txtHomeTicketNumber = (TextView) gridView.findViewById(R.id.txtHomeTicketNumber);
+                TextView txtHomeTicketNextNumber = (TextView) gridView.findViewById(R.id.txtHomeTicketNextNumber);
+                int mobile = Integer.parseInt(mobileValues[position]);
 
-                String mobile = mobileValues[position];
 
-
-                if (mobile.equals(Integer.toString(servicetype.get(position).getTblServiceTypeID()))) {
+                if (mobile == servicetype.get(position).getTblServiceTypeID()) {
                     txtServiceTypeName.setText(servicetype.get(position).getServiceTypeName());
-                    txtHomeTicketNumber.setText(String.valueOf(servicetype.get(position).getTicketNumber()));
+                    txtHomeTicketNumber.setText("Current Ticket: " + String.valueOf(servicetype.get(position).getTicketNumber()));
+                    txtHomeTicketNextNumber.setText("Next Ticket: " + String.valueOf(servicetype.get(position).getTicketNumber() + 1));
                 }
 
             } else {
                 gridView = (View) convertView;
             }
-            return gridView;
 
+        } catch (Throwable e) {
+            Log.d("Error", "HomeFragment_LoadData" + e.getStackTrace());
 
-
+        }
+        return gridView;
     }
 
-    @Override
-    public int getCount() {
-        return mobileValues.length;
-    }
+        @Override
+        public int getCount () {
+            return mobileValues.length;
+        }
 
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
+        @Override
+        public Object getItem ( int position){
+            return null;
+        }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
+        @Override
+        public long getItemId ( int position){
+            return 0;
+        }
     }
-}

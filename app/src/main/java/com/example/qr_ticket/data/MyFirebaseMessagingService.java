@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.example.qr_ticket.BuildConfig;
 import com.example.qr_ticket.R;
 import com.example.qr_ticket.ui.MenuActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -193,7 +194,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     json.put("to", fcmToken);
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
                     Request request = new Request.Builder()
-                            .header("Authorization", "key=AAAA8qJVnNI:APA91bEqSy1tESd_dYbtOFc3bwJQHDiWXjsT0hVjMlR55DXsllArSWril_xLp4dHkjJhidnWEo1xaRWsWLfi3bquuDwnvXUNI9o5fMKDz1zJAVCu1QHV0MTX2QNbrFOX_485WIHl0k3X")
+                            .header("Authorization", "key=" + BuildConfig.FIREBASEKEY)
                             .url("https://fcm.googleapis.com/fcm/send")
                             .post(body)
                             .build();

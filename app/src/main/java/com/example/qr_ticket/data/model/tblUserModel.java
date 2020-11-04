@@ -5,6 +5,33 @@ public class tblUserModel extends  BaseModel {
     private String password;
     private int tblUserID;
     private int IsAdmin;
+    public String displayname;
+    public String email;
+    public String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDisplayname() {
+        return displayname;
+    }
+
+    public void setDisplayname(String displayname) {
+        this.displayname = displayname;
+    }
 
     public String getPassword() {
         return password;

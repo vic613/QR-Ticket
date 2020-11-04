@@ -158,7 +158,7 @@ public class tblUserServiceTypeRepository extends ConnectionClass {
 
         tblUserServiceTypeModel item;
         try {
-            cs = con.prepareCall("{call sp_tblUserServiceType_UpdateStatus(?,?,?,?,?)}");
+            cs = con.prepareCall("{call sp_tblUserServiceType_UpdateStatus(?,?,?,?,?,?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
             cs.setInt("@tblUserID", userservicetypemodel.getTblUserID());
             cs.setInt("@TicketNumber", userservicetypemodel.getTicketNumber());

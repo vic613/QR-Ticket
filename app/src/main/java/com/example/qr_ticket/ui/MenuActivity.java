@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +31,13 @@ import com.example.qr_ticket.data.model.tblUserServiceTypeModel;
 import com.example.qr_ticket.data.repository.tblServiceTypeRepository;
 import com.example.qr_ticket.data.repository.tblUserServiceTypeRepository;
 import com.example.qr_ticket.ui.login.LoginActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -47,7 +55,7 @@ public class MenuActivity extends AppCompatActivity {
     private List<tblServiceTypeModel> servicetypelist;
     private NavController navController;
     private Spinner spServiceType;
-
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +68,20 @@ public class MenuActivity extends AppCompatActivity {
         TextView txtheaderemail = (TextView) headerLayout.findViewById(R.id.txtheaderemail);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         FloatingActionButton fabAdd = (FloatingActionButton) this.findViewById(R.id.fabAdd);
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
+                .requestEmail()
+                .build();
+        // [END configure_signin]
 
+        // [START build_client]
+        // Build a GoogleSignInClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        // [END build_client]
 
         session = new UserSessionManager(getApplicationContext());
         user = UserSessionManager.getInstance(getApplicationContext()).getUserDetails();
@@ -133,6 +154,15 @@ public class MenuActivity extends AppCompatActivity {
 
     private void logout() {
         Intent loginIntent = new Intent(MenuActivity.this, LoginActivity.class);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // [START_EXCLUDE]
+                        // [END_EXCLUDE]
+                    }
+                });
+
         startActivity(loginIntent);
         // Clear the User session data
         // and redirect user to LoginActivity
