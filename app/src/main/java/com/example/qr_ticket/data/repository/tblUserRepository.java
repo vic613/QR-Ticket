@@ -36,6 +36,8 @@ public class tblUserRepository extends ConnectionClass {
                     item.setLoginID(rs.getString("LoginID"));
                     item.setTblUserID(rs.getInt("tblUserID"));
                     item.setIsAdmin(rs.getInt("IsAdmin"));
+                    item.setEmail(rs.getString("Email"));
+                    item.setDisplayname(rs.getString("DisplayName"));
                     result.add(item);
                 }
             return result;

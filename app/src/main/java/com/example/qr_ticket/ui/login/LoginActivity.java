@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -163,9 +164,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             type= "GOOGLE";
             ProcessLogin();
 
-        }else{
-
-
         }
     }
 
@@ -186,6 +184,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final View dialog_locallogin = layoutInflater.inflate(R.layout.dialog_locallogin, null);
         alertDialogBuilder.setView(dialog_locallogin);
         final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.show();
         final EditText usernameEditText = dialog_locallogin.findViewById(R.id.username);
         final EditText passwordEditText = dialog_locallogin.findViewById(R.id.password);
@@ -206,14 +205,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
 
 
-        Button btnLocalCancel = dialog_locallogin.findViewById(R.id.btnLocalCancel);
-        btnLocalCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                alertDialog.cancel();
-            }
-        });
     }
 
     public void ProcessLogin(){
@@ -246,8 +237,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                 });
 
-                session.createUserLoginSession("QRTicket",
-                        result.get(0).getDisplayname(), String.valueOf(result.get(0).getTblUserID()),
+                session.createUserLoginSession(result.get(0).getDisplayname(),
+                        result.get(0).getEmail(), String.valueOf(result.get(0).getTblUserID()),
                         String.valueOf(result.get(0).getIsAdmin()));
 
 
@@ -260,7 +251,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 //Complete and destroy login activity once successful
                 finish();
             } else {
-
+                Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
             }
         }catch (Throwable e) {
            Log.d("Error",e.getMessage());
