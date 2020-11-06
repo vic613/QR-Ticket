@@ -76,7 +76,7 @@ public class TicketFragment extends Fragment {
 
             userservicetypemodel.setTblUserID(Integer.parseInt(user.get(UserSessionManager.KEY_USERID)));
 
-            ArrayList<tblUserServiceTypeModel> result = servicetypeclass.sp_tblUserServiceType_SearchByID(userservicetypemodel);
+            ArrayList<tblUserServiceTypeModel> result = servicetypeclass.sp_tblUserServiceType_SearchByUserID(userservicetypemodel);
             if (!result.isEmpty()) {
                 servicetypelist = result;
                 Display display = manager.getDefaultDisplay();

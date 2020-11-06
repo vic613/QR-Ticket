@@ -38,6 +38,8 @@ public class UserSessionManager {
 
     public static final String KEY_ISADMIN = "0";
 
+    public static final String KEY_FIREBASETOKEN = "FIREBASETOKEN";
+
     private static UserSessionManager jInstance;
 
     // Constructor
@@ -57,7 +59,7 @@ public class UserSessionManager {
         }
     }
     //Create login session
-    public void createUserLoginSession(String name, String email,String tblUserID, String IsAdmin){
+    public void createUserLoginSession(String name, String email,String tblUserID, String IsAdmin, String firebaseToken){
         // Storing login value as TRUE
         editor.putBoolean(IS_USER_LOGIN, true);
 
@@ -69,6 +71,8 @@ public class UserSessionManager {
         editor.putString(KEY_EMAIL, email);
 
         editor.putString(KEY_ISADMIN, IsAdmin);
+
+        editor.putString(KEY_FIREBASETOKEN,firebaseToken );
 
         // commit changes
         editor.commit();
@@ -119,6 +123,8 @@ public class UserSessionManager {
         user.put(KEY_USERID, pref.getString(KEY_USERID, null));
 
         user.put(KEY_ISADMIN, pref.getString(KEY_ISADMIN, null));
+
+        user.put(KEY_FIREBASETOKEN, pref.getString(KEY_FIREBASETOKEN, null));
 
         // return user
         return user;

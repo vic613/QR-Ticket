@@ -3,6 +3,7 @@ package com.example.qr_ticket.ui.login;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.qr_ticket.R;
 import com.example.qr_ticket.data.EncryptionClass;
+import com.example.qr_ticket.data.SpinnerDialog;
 import com.example.qr_ticket.data.UserSessionManager;
 import com.example.qr_ticket.data.model.tblUserCustomInfoModel;
 import com.example.qr_ticket.data.model.tblUserModel;
@@ -54,6 +57,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String loginID;
     String displayname;
     String type;
+    String firebasetoken;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,7 +166,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             loginID = String.valueOf(account.getEmail());
             password = String.valueOf("");
             displayname = account.getDisplayName();
-            type= "GOOGLE";
+            type = "GOOGLE";
             ProcessLogin();
 
         }
@@ -198,7 +203,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 loginID = String.valueOf(usernameEditText.getText());
                 password = String.valueOf(passwordEditText.getText());
                 displayname = "";
-                type="LOCAL";
+                type = "LOCAL";
                 ProcessLogin();
                 alertDialog.hide();
             }
@@ -207,54 +212,67 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    public void ProcessLogin(){
+    public void ProcessLogin() {
         try {
+            FragmentManager fm = this.getSupportFragmentManager();
+            final SpinnerDialog spinnerdialog = new SpinnerDialog();
+            spinnerdialog.show(fm, "Start");
 
-            tblUserModel usermodel = new tblUserModel();
-            usermodel.setLoginID(loginID);
-            usermodel.setPassword(EncryptionClass.encrypt(password));
-            usermodel.setDisplayname("");
-            usermodel.setType(type);
-            tblUserRepository userclass = new tblUserRepository();
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //...here i'm waiting 5 seconds before hiding the custom dialog
+                    //...you can do whenever you want or whenever your work is done
+                    String encrptpwd = String.valueOf(EncryptionClass.encrypt(password));
+                    tblUserModel usermodel = new tblUserModel();
+                    usermodel.setLoginID(loginID);
+                    usermodel.setPassword(encrptpwd);
+                    usermodel.setDisplayname("");
+                    usermodel.setType(type);
+                    tblUserRepository userclass = new tblUserRepository();
 
-            final ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);
+                    final ArrayList<tblUserModel> result = userclass.sp_tblUser_SearchByLogin(usermodel);
 
-            if (!result.isEmpty()) {
+                    if (!result.isEmpty()) {
 
-                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                    @Override
-                    public void onSuccess(InstanceIdResult instanceIdResult) {
-                        String token = instanceIdResult.getToken();
-                        tblUserCustomInfoModel usercustominfo = new tblUserCustomInfoModel();
-                        tblUserCustomInfoRepository usercustominfoclass = new tblUserCustomInfoRepository();
-                        usercustominfo.setTblUserID(result.get(0).getTblUserID());
-                        usercustominfo.setType("FIREBASETOKEN");
-                        usercustominfo.setValue(token);
-                        usercustominfoclass.sp_tblUserCustomInfo_InsertUpdate(usercustominfo);
-                        if (usercustominfo.errorCode == 1) {
-                            Log.d("error", usercustominfo.errorMessage);
-                        }
+                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                            @Override
+                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                firebasetoken = instanceIdResult.getToken();
+                                tblUserCustomInfoModel usercustominfo = new tblUserCustomInfoModel();
+                                tblUserCustomInfoRepository usercustominfoclass = new tblUserCustomInfoRepository();
+                                usercustominfo.setTblUserID(result.get(0).getTblUserID());
+                                usercustominfo.setType("FIREBASETOKEN");
+                                usercustominfo.setValue(firebasetoken);
+                                usercustominfoclass.sp_tblUserCustomInfo_InsertUpdate(usercustominfo);
+                                if (usercustominfo.errorCode == 1) {
+                                    Log.d("error", usercustominfo.errorMessage);
+                                }
+                            }
+                        });
+
+                        session.createUserLoginSession(result.get(0).getDisplayname(),
+                                result.get(0).getEmail(), String.valueOf(result.get(0).getTblUserID()),
+                                String.valueOf(result.get(0).getIsAdmin()), firebasetoken);
+
+
+                        Intent menuActivity = new Intent(getBaseContext(), MenuActivity.class);
+                        startActivity(menuActivity);
+
+
+                        setResult(Activity.RESULT_OK);
+
+                        //Complete and destroy login activity once successful
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Login Failed", Toast.LENGTH_SHORT).show();
                     }
-                });
-
-                session.createUserLoginSession(result.get(0).getDisplayname(),
-                        result.get(0).getEmail(), String.valueOf(result.get(0).getTblUserID()),
-                        String.valueOf(result.get(0).getIsAdmin()));
-
-
-                Intent menuActivity = new Intent(getBaseContext(), MenuActivity.class);
-                startActivity(menuActivity);
-
-
-                setResult(Activity.RESULT_OK);
-
-                //Complete and destroy login activity once successful
-                finish();
-            } else {
-                Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
-            }
-        }catch (Throwable e) {
-           Log.d("Error",e.getMessage());
+                    spinnerdialog.dismiss();
+                }
+            }, 1000);
+        } catch (Throwable e) {
+            Log.d("Error", e.getMessage());
         }
     }
 }

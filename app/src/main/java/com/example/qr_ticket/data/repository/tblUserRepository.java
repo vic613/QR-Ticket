@@ -19,32 +19,30 @@ public class tblUserRepository extends ConnectionClass {
         Connection con = getConnection();
         CallableStatement cs = null;
         ArrayList<tblUserModel> result = new ArrayList<tblUserModel>();
-
         tblUserModel item;
         try {
             cs = con.prepareCall("{call sp_tblUser_SearchByLogin(?,?,?,?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
             cs.setString("@LoginID", usermodel.getLoginID());
-            cs.setString("@Password", usermodel.getPassword());
+            cs.setString("@Password",  usermodel.getPassword());
             cs.setString("@DisplayName", usermodel.getDisplayname());
             cs.setString("@Type", usermodel.getType());
             cs.execute();
 
             ResultSet rs = cs.getResultSet();
-                while(rs.next()) {
-                    item = new tblUserModel();  // line1
-                    item.setLoginID(rs.getString("LoginID"));
-                    item.setTblUserID(rs.getInt("tblUserID"));
-                    item.setIsAdmin(rs.getInt("IsAdmin"));
-                    item.setEmail(rs.getString("Email"));
-                    item.setDisplayname(rs.getString("DisplayName"));
-                    result.add(item);
-                }
+            while (rs.next()) {
+                item = new tblUserModel();  // line1
+                item.setLoginID(rs.getString("LoginID"));
+                item.setTblUserID(rs.getInt("tblUserID"));
+                item.setIsAdmin(rs.getInt("IsAdmin"));
+                item.setEmail(rs.getString("Email"));
+                item.setDisplayname(rs.getString("DisplayName"));
+                result.add(item);
+            }
             return result;
         } catch (SQLException e) {
             Log.d("SQLException: ", e.getMessage());
-        }
-        finally {
+        } finally {
             if (cs != null) {
                 try {
                     cs.close();
@@ -86,14 +84,14 @@ public class tblUserRepository extends ConnectionClass {
             }
             return true;
         } catch (SQLException e) {
-            Log.d("SQLException: " , e.getMessage());
+            Log.d("SQLException: ", e.getMessage());
             return false;
         } finally {
             if (cs != null) {
                 try {
                     cs.close();
                 } catch (SQLException e) {
-                    Log.d("SQLException: " , e.getMessage());
+                    Log.d("SQLException: ", e.getMessage());
                 }
             }
             if (con != null) {
@@ -101,7 +99,7 @@ public class tblUserRepository extends ConnectionClass {
                     con.close();
 
                 } catch (SQLException e) {
-                    Log.d("SQLException: " , e.getMessage());
+                    Log.d("SQLException: ", e.getMessage());
                 }
             }
             return true;

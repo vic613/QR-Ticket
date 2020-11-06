@@ -60,13 +60,13 @@ public class tblUserServiceTypeRepository extends ConnectionClass {
 
     }
 
-    public ArrayList<tblUserServiceTypeModel> sp_tblUserServiceType_SearchByID(tblUserServiceTypeModel userservicetypemodel) {
+    public ArrayList<tblUserServiceTypeModel> sp_tblUserServiceType_SearchByUserID(tblUserServiceTypeModel userservicetypemodel) {
         Connection con = getConnection();
         CallableStatement cs = null;
         ArrayList<tblUserServiceTypeModel> result = new ArrayList<tblUserServiceTypeModel>();
         tblUserServiceTypeModel item;
         try {
-            cs = con.prepareCall("{call sp_tblUserServiceType_SearchByID(?)}");
+            cs = con.prepareCall("{call sp_tblUserServiceType_SearchByUserID(?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
             cs.setInt("@tblUserID", userservicetypemodel.getTblUserID());
             //cs.setInt(2, UserSessionManager());
@@ -205,6 +205,53 @@ public class tblUserServiceTypeRepository extends ConnectionClass {
         tblUserServiceTypeModel item;
         try {
             cs = con.prepareCall("{call sp_tblUserServiceType_SelectNextTicket(?,?,?)}");
+            //cs.registerOutParameter(1, Types.VARCHAR);
+            cs.setInt("@tblUserID", userservicetypemodel.getTblUserID());
+            cs.setInt("@TicketNumber", userservicetypemodel.getTicketNumber());
+            cs.setInt("@tblServiceTypeID", userservicetypemodel.getTblServiceTypeID());
+            //cs.setInt(2, UserSessionManager());
+            cs.execute();
+
+            ResultSet rs = cs.getResultSet();
+            while(rs.next()) {
+                item = new tblUserServiceTypeModel();  // line1
+                item.setTblUserID(rs.getInt("tblUserID"));
+                item.setTicketNumber(rs.getInt("TicketNumber"));
+                item.setTblServiceTypeID(rs.getInt("tblServiceTypeID"));
+                item.setServiceTypeName(rs.getString("ServiceTypeName"));
+                item.setToken(rs.getString("Token"));
+                result.add(item);
+            }
+            return result;
+        } catch (SQLException e) {
+            Log.d("SQLException: ", "sp_tblUserServiceType_SelectNextTicket" + e.getMessage());
+        }
+        finally {
+            if (cs != null) {
+                try {
+                    cs.close();
+                } catch (SQLException e) {
+                    Log.d("SQLException: ", e.getMessage());
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    Log.d("SQLException: ", e.getMessage());
+                }
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<tblUserServiceTypeModel> sp_tblUserServiceType_SelectCurrentTicket(tblUserServiceTypeModel userservicetypemodel) {
+        Connection con = getConnection();
+        CallableStatement cs = null;
+        ArrayList<tblUserServiceTypeModel> result = new ArrayList<tblUserServiceTypeModel>();
+        tblUserServiceTypeModel item;
+        try {
+            cs = con.prepareCall("{call sp_tblUserServiceType_SelectCurrentTicket(?,?,?)}");
             //cs.registerOutParameter(1, Types.VARCHAR);
             cs.setInt("@tblUserID", userservicetypemodel.getTblUserID());
             cs.setInt("@TicketNumber", userservicetypemodel.getTicketNumber());

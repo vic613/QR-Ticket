@@ -2,6 +2,7 @@ package com.example.qr_ticket.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,12 +20,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.qr_ticket.R;
+import com.example.qr_ticket.data.SpinnerDialog;
 import com.example.qr_ticket.data.UserSessionManager;
 import com.example.qr_ticket.data.model.tblServiceTypeModel;
 import com.example.qr_ticket.data.model.tblUserServiceTypeModel;
@@ -122,11 +125,25 @@ public class MenuActivity extends AppCompatActivity {
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1) {
-                    startActivity(new Intent(MenuActivity.this ,ScannedBarcodeActivity.class));
-                }else {
-                    showPopupDialog();
-                }
+
+                FragmentManager fm = getSupportFragmentManager();
+                final SpinnerDialog spinnerdialog = new SpinnerDialog();
+                spinnerdialog.show(fm, "Start");
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //...here i'm waiting 5 seconds before hiding the custom dialog
+                        //...you can do whenever you want or whenever your work is done
+                        if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1) {
+                            startActivity(new Intent(MenuActivity.this, ScannedBarcodeActivity.class));
+                        } else {
+                            showPopupDialog();
+                        }
+                        spinnerdialog.dismiss();
+                    }
+                }, 1000);
             }
         });
 
@@ -221,7 +238,6 @@ public class MenuActivity extends AppCompatActivity {
                 if (userservicetypemodel.errorCode == 1) {
                     Toast.makeText(MenuActivity.this, userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
                 } else {
-
                     navController.navigate(R.id.nav_ticket);
                     alertDialog.hide();
                 }

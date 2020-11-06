@@ -64,4 +64,9 @@ public class tblUserModel extends  BaseModel {
     public void setIsAdmin(int isAdmin) {
         IsAdmin = isAdmin;
     }
+
+    @Override
+    public String toString() {
+        return password;
+    }
 }
