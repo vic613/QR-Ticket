@@ -23,6 +23,7 @@ android {
             buildConfigField "String", 'FIREBASEKEY', "\"AAAA8qJVnNI:APA91bEqSy1tESd_dYbtOFc3bwJQHDiWXjsT0hVjMlR55DXsllArSWril_xLp4dHkjJhidnWEo1xaRWsWLfi3bquuDwnvXUNI9o5fMKDz1zJAVCu1QHV0MTX2QNbrFOX_485WIHl0k3X\""
         }
         release {
+            debuggable true
             buildConfigField "String", 'SQLSERVER', "\"sqlexpress2017.cvjkmzdiplil.ap-southeast-1.rds.amazonaws.com:1433/QRTicket\""
             buildConfigField "String", 'USERNAME', "\"admin\""
             buildConfigField "String", 'PASSWORD', "\"kcm566145\""

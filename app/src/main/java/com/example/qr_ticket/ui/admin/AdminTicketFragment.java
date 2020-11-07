@@ -145,28 +145,29 @@ public class AdminTicketFragment extends Fragment {
                         spAdminticketServiceType.setAdapter(adapter);
 
                         for (int i = 0; i < servicetypelist.size(); i++) {
-
-                            if (obj != null && servicetypelist.get(i).getTblServiceTypeID() == obj.tblServiceTypeID) {
-                                spAdminticketServiceType.setSelection(i);
-                            } else {
-                                spAdminticketServiceType.setSelection(0);
+                            if (obj != null) {
+                                if (servicetypelist.get(i).getTblServiceTypeID() == obj.tblServiceTypeID) {
+                                    spAdminticketServiceType.setSelection(i);
+                                } else {
+                                    spAdminticketServiceType.setSelection(0);
+                                }
                             }
-
 
                         }
                     }
 
+                    if (obj != null) {
+                        tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
+                        tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
+                        userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
+                        userservicetypemodel.setTblUserID(obj.tblUserID);
+                        userservicetypemodel.setTicketNumber(obj.getTicketNumber());
+                        userservicetypemodel.setTicketStatus("WIP");
+                        userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
 
-                    tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
-                    tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
-                    userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
-                    userservicetypemodel.setTblUserID(obj.tblUserID);
-                    userservicetypemodel.setTicketNumber(obj.getTicketNumber());
-                    userservicetypemodel.setTicketStatus("WIP");
-                    userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
-
-                    if (userservicetypemodel.errorCode == 1) {
-                        Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                        if (userservicetypemodel.errorCode == 1) {
+                            Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     spinnerdialog.dismiss();
@@ -197,31 +198,32 @@ public class AdminTicketFragment extends Fragment {
 
                     Gson gson = new Gson();
                     tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+                    if (obj != null) {
+                        tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
+                        tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
+                        userservicetypemodel.setTblUserID(obj.tblUserID);
+                        userservicetypemodel.setTicketNumber(obj.ticketNumber);
+                        userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
+                        userservicetypemodel.setTicketStatus("CANCEL");
+                        userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
+                        if (userservicetypemodel.errorCode == 1) {
+                            Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                        } else {
+                            ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
+                            if (!result.isEmpty()) {
+                                userservicetypelist = result;
+                                int readytime = 5;
+                                for (int i = 0; i < userservicetypelist.size(); i++) {
+                                    sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
+                                    readytime = readytime + 5;
+                                }
 
-                    tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
-                    tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
-                    userservicetypemodel.setTblUserID(obj.tblUserID);
-                    userservicetypemodel.setTicketNumber(obj.ticketNumber);
-                    userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
-                    userservicetypemodel.setTicketStatus("CANCEL");
-                    userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
-                    if (userservicetypemodel.errorCode == 1) {
-                        Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
-                    } else {
-                        ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
-                        if (!result.isEmpty()) {
-                            userservicetypelist = result;
-                            int readytime = 5;
-                            for (int i = 0; i < userservicetypelist.size(); i++) {
-                                sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
-                                readytime = readytime + 5;
                             }
 
+
+                            Toast.makeText(getActivity(), "Successful Cancel", Toast.LENGTH_SHORT).show();
+                            navController.navigate(R.id.nav_home);
                         }
-
-
-                        Toast.makeText(getActivity(), "Successful Cancel", Toast.LENGTH_SHORT).show();
-                        navController.navigate(R.id.nav_home);
                     }
                     spinnerdialog.dismiss();
                 }
@@ -250,31 +252,32 @@ public class AdminTicketFragment extends Fragment {
 
                     Gson gson = new Gson();
                     tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+                    if (obj != null) {
+                        tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
+                        tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
+                        userservicetypemodel.setTblUserID(obj.tblUserID);
+                        userservicetypemodel.setTicketNumber(obj.ticketNumber);
+                        userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
+                        userservicetypemodel.setTicketStatus("COMPLETE");
+                        userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
+                        if (userservicetypemodel.errorCode == 1) {
+                            Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                        } else {
+                            ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
+                            if (!result.isEmpty()) {
+                                userservicetypelist = result;
+                                int readytime = 5;
+                                for (int i = 0; i < userservicetypelist.size(); i++) {
+                                    sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
+                                    readytime = readytime + 5;
+                                }
 
-                    tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
-                    tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
-                    userservicetypemodel.setTblUserID(obj.tblUserID);
-                    userservicetypemodel.setTicketNumber(obj.ticketNumber);
-                    userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
-                    userservicetypemodel.setTicketStatus("COMPLETE");
-                    userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
-                    if (userservicetypemodel.errorCode == 1) {
-                        Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
-                    } else {
-                        ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
-                        if (!result.isEmpty()) {
-                            userservicetypelist = result;
-                            int readytime = 5;
-                            for (int i = 0; i < userservicetypelist.size(); i++) {
-                                sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
-                                readytime = readytime + 5;
                             }
 
+
+                            Toast.makeText(getActivity(), "Successful Completed", Toast.LENGTH_SHORT).show();
+                            navController.navigate(R.id.nav_home);
                         }
-
-
-                        Toast.makeText(getActivity(), "Successful Completed", Toast.LENGTH_SHORT).show();
-                        navController.navigate(R.id.nav_home);
                     }
                     spinnerdialog.dismiss();
                 }
