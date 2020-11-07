@@ -37,8 +37,6 @@ import com.example.qr_ticket.ui.login.LoginActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -61,6 +59,7 @@ public class MenuActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     FragmentManager fm;
     SpinnerDialog spinnerdialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +79,7 @@ public class MenuActivity extends AppCompatActivity {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
+                //.requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
                 .requestEmail()
                 .build();
         // [END configure_signin]
@@ -101,10 +100,10 @@ public class MenuActivity extends AppCompatActivity {
 
         Menu nav_Menu = navigationView.getMenu();
 
-        if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1){
+        if (Integer.parseInt(user.get(UserSessionManager.KEY_ISADMIN)) == 1) {
             fabAdd.setImageResource(R.drawable.ic_baseline_photo_camera);
             nav_Menu.findItem(R.id.nav_ticket).setVisible(false);
-        }else{
+        } else {
             nav_Menu.findItem(R.id.nav_adminticket).setVisible(false);
         }
 
@@ -112,7 +111,7 @@ public class MenuActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_ticket, R.id.nav_adminticket,  R.id.nav_logout)
+                R.id.nav_home, R.id.nav_ticket, R.id.nav_adminticket, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -151,8 +150,8 @@ public class MenuActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        String qrResult=intent.getStringExtra("QRResult");
-        if (!TextUtils.isEmpty(qrResult)){
+        String qrResult = intent.getStringExtra("QRResult");
+        if (!TextUtils.isEmpty(qrResult)) {
             navController.navigate(R.id.nav_adminticket);
         }
 
@@ -182,7 +181,7 @@ public class MenuActivity extends AppCompatActivity {
                         // [END_EXCLUDE]
                     }
                 });
-
+        
         startActivity(loginIntent);
         // Clear the User session data
         // and redirect user to LoginActivity
@@ -258,7 +257,6 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
     }
-
 
 
 }
