@@ -59,7 +59,8 @@ public class MenuActivity extends AppCompatActivity {
     private NavController navController;
     private Spinner spServiceType;
     private GoogleSignInClient mGoogleSignInClient;
-
+    FragmentManager fm;
+    SpinnerDialog spinnerdialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +72,10 @@ public class MenuActivity extends AppCompatActivity {
         TextView txtheaderemail = (TextView) headerLayout.findViewById(R.id.txtheaderemail);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         FloatingActionButton fabAdd = (FloatingActionButton) this.findViewById(R.id.fabAdd);
+
+        fm = getSupportFragmentManager();
+        spinnerdialog = new SpinnerDialog();
+
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -126,8 +131,6 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                FragmentManager fm = getSupportFragmentManager();
-                final SpinnerDialog spinnerdialog = new SpinnerDialog();
                 spinnerdialog.show(fm, "Start");
 
                 final Handler handler = new Handler();

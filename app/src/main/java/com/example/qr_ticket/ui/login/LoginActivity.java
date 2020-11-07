@@ -58,7 +58,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String displayname;
     String type;
     String firebasetoken;
-
+    FragmentManager fm;
+    SpinnerDialog spinnerdialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +71,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
+        fm = this.getSupportFragmentManager();
+        spinnerdialog = new SpinnerDialog();
 
         final Button login = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
@@ -214,8 +217,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void ProcessLogin() {
         try {
-            FragmentManager fm = this.getSupportFragmentManager();
-            final SpinnerDialog spinnerdialog = new SpinnerDialog();
             spinnerdialog.show(fm, "Start");
 
             final Handler handler = new Handler();

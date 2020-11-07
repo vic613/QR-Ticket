@@ -53,6 +53,8 @@ public class AdminTicketFragment extends Fragment {
     private List<tblServiceTypeModel> servicetypelist;
     ProgressDialog progressDoalog;
     NotificationManager NM;
+    FragmentManager fm;
+    SpinnerDialog spinnerdialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,7 +62,8 @@ public class AdminTicketFragment extends Fragment {
         // Inflate the layout for this fragment
         final View root = inflater.inflate(R.layout.fragment_admin_ticket, container, false);
         user = UserSessionManager.getInstance(getContext()).getUserDetails();
-
+        fm = getActivity().getSupportFragmentManager();
+        spinnerdialog = new SpinnerDialog();
         spAdminticketServiceType = root.findViewById(R.id.spAdminticketServiceType);
         txtAdminTicketNumberValue = root.findViewById(R.id.txtAdminTicketNumberValue);
         txtAdminEmailValue = root.findViewById(R.id.txtAdminEmailValue);
@@ -107,55 +110,68 @@ public class AdminTicketFragment extends Fragment {
 
     private void LoadData() {
         try {
-            Intent intent = getActivity().getIntent();
-            String qrResult = intent.getStringExtra("QRResult");
-            Gson gson = new Gson();
-            tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
-            if (obj != null) {
-                txtAdminTicketNumberValue.setPaintFlags(txtAdminTicketNumberValue.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                txtAdminTicketNumberValue.setText(String.valueOf(obj.ticketNumber));
-                txtAdminEmailValue.setPaintFlags(txtAdminEmailValue.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                txtAdminEmailValue.setText(obj.email);
-            }
+            spinnerdialog.show(fm, "Start");
 
-            tblServiceTypeModel servicetypemodel = new tblServiceTypeModel();
-            tblServiceTypeRepository servicetypeclass = new tblServiceTypeRepository();
-            servicetypemodel.setKeywords("");
-            servicetypemodel.setTblUserID(Integer.parseInt(user.get(UserSessionManager.KEY_USERID)));
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //...here i'm waiting 5 seconds before hiding the custom dialog
+                    //...you can do whenever you want or whenever your work is done
 
-            ArrayList<tblServiceTypeModel> result = servicetypeclass.sp_tblServiceType_SearchAllByFilter(servicetypemodel);
-            if (!result.isEmpty()) {
-                servicetypelist = result;
 
-                ArrayAdapter<tblServiceTypeModel> adapter = new ArrayAdapter<tblServiceTypeModel>(getContext(), android.R.layout.simple_spinner_item, servicetypelist);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spAdminticketServiceType.setAdapter(adapter);
+                    Intent intent = getActivity().getIntent();
+                    String qrResult = intent.getStringExtra("QRResult");
+                    Gson gson = new Gson();
+                    tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+                    if (obj != null) {
+                        txtAdminTicketNumberValue.setPaintFlags(txtAdminTicketNumberValue.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        txtAdminTicketNumberValue.setText(String.valueOf(obj.ticketNumber));
+                        txtAdminEmailValue.setPaintFlags(txtAdminEmailValue.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        txtAdminEmailValue.setText(obj.email);
+                    }
 
-                for (int i = 0; i < servicetypelist.size(); i++) {
+                    tblServiceTypeModel servicetypemodel = new tblServiceTypeModel();
+                    tblServiceTypeRepository servicetypeclass = new tblServiceTypeRepository();
+                    servicetypemodel.setKeywords("");
+                    servicetypemodel.setTblUserID(Integer.parseInt(user.get(UserSessionManager.KEY_USERID)));
 
-                    if (obj != null && servicetypelist.get(i).getTblServiceTypeID() == obj.tblServiceTypeID) {
-                        spAdminticketServiceType.setSelection(i);
-                    } else {
-                        spAdminticketServiceType.setSelection(0);
+                    ArrayList<tblServiceTypeModel> result = servicetypeclass.sp_tblServiceType_SearchAllByFilter(servicetypemodel);
+                    if (!result.isEmpty()) {
+                        servicetypelist = result;
+
+                        ArrayAdapter<tblServiceTypeModel> adapter = new ArrayAdapter<tblServiceTypeModel>(getContext(), android.R.layout.simple_spinner_item, servicetypelist);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spAdminticketServiceType.setAdapter(adapter);
+
+                        for (int i = 0; i < servicetypelist.size(); i++) {
+
+                            if (obj != null && servicetypelist.get(i).getTblServiceTypeID() == obj.tblServiceTypeID) {
+                                spAdminticketServiceType.setSelection(i);
+                            } else {
+                                spAdminticketServiceType.setSelection(0);
+                            }
+
+
+                        }
                     }
 
 
+                    tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
+                    tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
+                    userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
+                    userservicetypemodel.setTblUserID(obj.tblUserID);
+                    userservicetypemodel.setTicketNumber(obj.getTicketNumber());
+                    userservicetypemodel.setTicketStatus("WIP");
+                    userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
+
+                    if (userservicetypemodel.errorCode == 1) {
+                        Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+
+                    spinnerdialog.dismiss();
                 }
-            }
-
-
-            tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
-            tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
-            userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
-            userservicetypemodel.setTblUserID(obj.tblUserID);
-            userservicetypemodel.setTicketNumber(obj.getTicketNumber());
-            userservicetypemodel.setTicketStatus("WIP");
-            userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
-
-            if (userservicetypemodel.errorCode == 1) {
-                Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
-            }
-
+            }, 1000);
 
         } catch (Throwable e) {
             Log.d("Error", "AdminTicketFragment_LoadData" + e.getStackTrace());
@@ -166,37 +182,50 @@ public class AdminTicketFragment extends Fragment {
 
     private void CancelTicket() {
         try {
-            Intent intent = getActivity().getIntent();
-            String qrResult = intent.getStringExtra("QRResult");
+            spinnerdialog.show(fm, "Start");
 
-            Gson gson = new Gson();
-            tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //...here i'm waiting 5 seconds before hiding the custom dialog
+                    //...you can do whenever you want or whenever your work is done
 
-            tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
-            tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
-            userservicetypemodel.setTblUserID(obj.tblUserID);
-            userservicetypemodel.setTicketNumber(obj.ticketNumber);
-            userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
-            userservicetypemodel.setTicketStatus("CANCEL");
-            userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
-            if (userservicetypemodel.errorCode == 1) {
-                Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
-            } else {
-                ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
-                if (!result.isEmpty()) {
-                    userservicetypelist = result;
-                    int readytime = 5;
-                    for (int i = 0; i < userservicetypelist.size(); i++) {
-                        sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
-                        readytime = readytime + 5;
+
+                    Intent intent = getActivity().getIntent();
+                    String qrResult = intent.getStringExtra("QRResult");
+
+                    Gson gson = new Gson();
+                    tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+
+                    tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
+                    tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
+                    userservicetypemodel.setTblUserID(obj.tblUserID);
+                    userservicetypemodel.setTicketNumber(obj.ticketNumber);
+                    userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
+                    userservicetypemodel.setTicketStatus("CANCEL");
+                    userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
+                    if (userservicetypemodel.errorCode == 1) {
+                        Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                    } else {
+                        ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
+                        if (!result.isEmpty()) {
+                            userservicetypelist = result;
+                            int readytime = 5;
+                            for (int i = 0; i < userservicetypelist.size(); i++) {
+                                sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
+                                readytime = readytime + 5;
+                            }
+
+                        }
+
+
+                        Toast.makeText(getActivity(), "Successful Cancel", Toast.LENGTH_SHORT).show();
+                        navController.navigate(R.id.nav_home);
                     }
-
+                    spinnerdialog.dismiss();
                 }
-
-
-                Toast.makeText(getActivity(), "Successful Cancel", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.nav_home);
-            }
+            }, 1000);
 
         } catch (Throwable e) {
             Log.d("Error", "AdminTicketFragment_CancelTicket_" + e.getStackTrace());
@@ -206,37 +235,50 @@ public class AdminTicketFragment extends Fragment {
 
     private void CompleteTicket() {
         try {
-            Intent intent = getActivity().getIntent();
-            String qrResult = intent.getStringExtra("QRResult");
+            spinnerdialog.show(fm, "Start");
 
-            Gson gson = new Gson();
-            tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //...here i'm waiting 5 seconds before hiding the custom dialog
+                    //...you can do whenever you want or whenever your work is done
 
-            tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
-            tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
-            userservicetypemodel.setTblUserID(obj.tblUserID);
-            userservicetypemodel.setTicketNumber(obj.ticketNumber);
-            userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
-            userservicetypemodel.setTicketStatus("COMPLETE");
-            userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
-            if (userservicetypemodel.errorCode == 1) {
-                Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
-            } else {
-                ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
-                if (!result.isEmpty()) {
-                    userservicetypelist = result;
-                    int readytime = 5;
-                    for (int i = 0; i < userservicetypelist.size(); i++) {
-                        sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
-                        readytime = readytime + 5;
+
+                    Intent intent = getActivity().getIntent();
+                    String qrResult = intent.getStringExtra("QRResult");
+
+                    Gson gson = new Gson();
+                    tblUserServiceTypeModel obj = gson.fromJson(qrResult, tblUserServiceTypeModel.class);
+
+                    tblUserServiceTypeModel userservicetypemodel = new tblUserServiceTypeModel();
+                    tblUserServiceTypeRepository userservicetypeclass = new tblUserServiceTypeRepository();
+                    userservicetypemodel.setTblUserID(obj.tblUserID);
+                    userservicetypemodel.setTicketNumber(obj.ticketNumber);
+                    userservicetypemodel.setTblServiceTypeID(obj.tblServiceTypeID);
+                    userservicetypemodel.setTicketStatus("COMPLETE");
+                    userservicetypeclass.sp_tblUserServiceType_UpdateStatus(userservicetypemodel);
+                    if (userservicetypemodel.errorCode == 1) {
+                        Toast.makeText(getActivity(), userservicetypemodel.errorMessage, Toast.LENGTH_SHORT).show();
+                    } else {
+                        ArrayList<tblUserServiceTypeModel> result = userservicetypeclass.sp_tblUserServiceType_SelectNextTicket(userservicetypemodel);
+                        if (!result.isEmpty()) {
+                            userservicetypelist = result;
+                            int readytime = 5;
+                            for (int i = 0; i < userservicetypelist.size(); i++) {
+                                sendNotification("Your ticket will be ready in another" + readytime + " minutes.", "Ticket " + userservicetypelist.get(i).getTicketNumber(), userservicetypelist.get(i).getToken());
+                                readytime = readytime + 5;
+                            }
+
+                        }
+
+
+                        Toast.makeText(getActivity(), "Successful Completed", Toast.LENGTH_SHORT).show();
+                        navController.navigate(R.id.nav_home);
                     }
-
+                    spinnerdialog.dismiss();
                 }
-
-
-                Toast.makeText(getActivity(), "Successful Completed", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.nav_home);
-            }
+            }, 1000);
 
         } catch (Throwable e) {
             Log.d("Error", "AdminTicketFragment_CompleteTicket_" + e.getStackTrace());
@@ -246,8 +288,6 @@ public class AdminTicketFragment extends Fragment {
 
     private void NoticeUser() {
         try {
-            FragmentManager fm = getActivity().getSupportFragmentManager();
-            final SpinnerDialog spinnerdialog = new SpinnerDialog();
 
             spinnerdialog.show(fm, "Start");
 
