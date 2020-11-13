@@ -11,6 +11,7 @@ import android.widget.GridView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.qr_ticket.R;
 import com.example.qr_ticket.data.SpinnerDialog;
@@ -36,7 +37,16 @@ public class HomeFragment extends Fragment {
         fm = getActivity().getSupportFragmentManager();
         user = UserSessionManager.getInstance(getContext()).getUserDetails();
         spinnerdialog= new SpinnerDialog();
-        this.GetServiceTypeList(gvExchange);
+        GetServiceTypeList(gvExchange);
+
+        final SwipeRefreshLayout pullToRefresh = root.findViewById(R.id.swiperefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                GetServiceTypeList(gvExchange); // your code
+                pullToRefresh.setRefreshing(false);
+            }
+        });
 
         return root;
     }

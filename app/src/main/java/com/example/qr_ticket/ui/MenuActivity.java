@@ -181,7 +181,7 @@ public class MenuActivity extends AppCompatActivity {
                         // [END_EXCLUDE]
                     }
                 });
-        
+
         startActivity(loginIntent);
         // Clear the User session data
         // and redirect user to LoginActivity

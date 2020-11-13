@@ -16,9 +16,14 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", 'SQLSERVER', "\"192.168.0.106:1433/QRTicket\""
-            buildConfigField "String", 'USERNAME', "\"sa\""
-            buildConfigField "String", 'PASSWORD', "\"admin\""
+//            buildConfigField "String", 'SQLSERVER', "\"192.168.0.106:1433/QRTicket\""
+//            buildConfigField "String", 'USERNAME', "\"sa\""
+//            buildConfigField "String", 'PASSWORD', "\"admin\""
+//            buildConfigField "String", 'SECRETKEY', "\"oum1234\""
+//            buildConfigField "String", 'FIREBASEKEY', "\"AAAA8qJVnNI:APA91bEqSy1tESd_dYbtOFc3bwJQHDiWXjsT0hVjMlR55DXsllArSWril_xLp4dHkjJhidnWEo1xaRWsWLfi3bquuDwnvXUNI9o5fMKDz1zJAVCu1QHV0MTX2QNbrFOX_485WIHl0k3X\""
+            buildConfigField "String", 'SQLSERVER', "\"sqlexpress2017.cvjkmzdiplil.ap-southeast-1.rds.amazonaws.com:1433/QRTicket\""
+            buildConfigField "String", 'USERNAME', "\"admin\""
+            buildConfigField "String", 'PASSWORD', "\"kcm566145\""
             buildConfigField "String", 'SECRETKEY', "\"oum1234\""
             buildConfigField "String", 'FIREBASEKEY', "\"AAAA8qJVnNI:APA91bEqSy1tESd_dYbtOFc3bwJQHDiWXjsT0hVjMlR55DXsllArSWril_xLp4dHkjJhidnWEo1xaRWsWLfi3bquuDwnvXUNI9o5fMKDz1zJAVCu1QHV0MTX2QNbrFOX_485WIHl0k3X\""
         }
@@ -57,7 +62,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-directboot:20.2.0'
     implementation 'com.google.android.gms:play-services-vision:15.0.2'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
-
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
