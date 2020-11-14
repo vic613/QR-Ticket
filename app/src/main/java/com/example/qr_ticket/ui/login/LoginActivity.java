@@ -32,10 +32,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -60,6 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String firebasetoken;
     FragmentManager fm;
     SpinnerDialog spinnerdialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,14 +115,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onStart() {
         super.onStart();
+        if (session.isUserLoggedIn()){
+            Intent menuActivity = new Intent(getBaseContext(), MenuActivity.class);
+            startActivity(menuActivity);
 
-        // Check if the user is already signed in and all required scopes are granted
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
-            GoogleLogin(account);
-        } else {
-            GoogleLogin(null);
+        }else {
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+            if (account != null && GoogleSignIn.hasPermissions(account)) {
+                GoogleLogin(account);
+            } else {
+                GoogleLogin(null);
+            }
         }
+
     }
 
     // [START onActivityResult]

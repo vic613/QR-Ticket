@@ -30,10 +30,11 @@ public class HomeFragment extends Fragment {
     HashMap<String, String> user;
     FragmentManager fm ;
     SpinnerDialog spinnerdialog;
+    GridView gvExchange;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final GridView gvExchange = (GridView) root.findViewById(R.id.gvExchange);
+        gvExchange = (GridView) root.findViewById(R.id.gvExchange);
         fm = getActivity().getSupportFragmentManager();
         user = UserSessionManager.getInstance(getContext()).getUserDetails();
         spinnerdialog= new SpinnerDialog();
@@ -70,6 +71,7 @@ public class HomeFragment extends Fragment {
                     servicetypemodel.setTblUserID(Integer.parseInt(user.get(UserSessionManager.KEY_USERID)));
 
                     ArrayList<tblServiceTypeModel> result = servicetypeclass.sp_tblServiceType_SearchAllByFilter(servicetypemodel);
+
                     if (!result.isEmpty()) {
                         servicetypelist = result;
 
@@ -82,6 +84,7 @@ public class HomeFragment extends Fragment {
                         gvExchange.setAdapter(new HomeCustomAdapter(getContext(), servicetype, servicetypelist));
                     }
                     spinnerdialog.dismiss();
+                    refresh();
                 }
             }, 1000);
         } catch (Throwable e) {
@@ -92,4 +95,15 @@ public class HomeFragment extends Fragment {
     }
 
 
+    private void refresh(){
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                GetServiceTypeList(gvExchange);
+            }
+        } ;
+        handler.postDelayed(runnable, 60000);
+
+    }
 }
