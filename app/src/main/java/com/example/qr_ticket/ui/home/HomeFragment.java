@@ -38,7 +38,18 @@ public class HomeFragment extends Fragment {
         fm = getActivity().getSupportFragmentManager();
         user = UserSessionManager.getInstance(getContext()).getUserDetails();
         spinnerdialog= new SpinnerDialog();
-        GetServiceTypeList(gvExchange);
+        spinnerdialog.show(fm, "Start");
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //...here i'm waiting 5 seconds before hiding the custom dialog
+                //...you can do whenever you want or whenever your work is done
+                GetServiceTypeList(gvExchange);
+                spinnerdialog.dismiss();
+            }
+        }, 1000);
 
         final SwipeRefreshLayout pullToRefresh = root.findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -54,15 +65,6 @@ public class HomeFragment extends Fragment {
 
     private void GetServiceTypeList(final GridView gvExchange) {
         try {
-
-            spinnerdialog.show(fm, "Start");
-
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //...here i'm waiting 5 seconds before hiding the custom dialog
-                    //...you can do whenever you want or whenever your work is done
 
                     tblServiceTypeModel servicetypemodel = new tblServiceTypeModel();
                     tblServiceTypeRepository servicetypeclass = new tblServiceTypeRepository();
@@ -83,10 +85,8 @@ public class HomeFragment extends Fragment {
 
                         gvExchange.setAdapter(new HomeCustomAdapter(getContext(), servicetype, servicetypelist));
                     }
-                    spinnerdialog.dismiss();
                     refresh();
-                }
-            }, 1000);
+
         } catch (Throwable e) {
             Log.d("Error", "HomeFragment_LoadData" + e.getStackTrace());
         }
